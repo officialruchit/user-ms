@@ -21,7 +21,7 @@ export const getAllBundle = async (req: Request, res: Response) => {
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber)
       .exec();
-      
+
     res.status(200).json({
       totalDocuments,
       totalPages,

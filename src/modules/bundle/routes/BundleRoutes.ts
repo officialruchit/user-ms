@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const routes = Router();
-import {getAllBundle} from '../controller/getAllBundle'
+import { getAllBundle } from '../controller/getAllBundle';
 import { getBundleById } from '../controller/getBundleById';
 
 routes.get('/getAllBundle', getAllBundle);
