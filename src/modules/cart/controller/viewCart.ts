@@ -3,9 +3,9 @@ import { Cart } from '../../../model/cart';
 
 export const viewCart = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+ const userId=req.userId
 
-    const cart = await Cart.findOne({ userId }).populate({
+    const cart = await Cart.findOne( {userId} ).populate({
       path: 'items',
       populate: { path: 'productId', model: 'Product' },
     });

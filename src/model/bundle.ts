@@ -2,7 +2,6 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // BundleProduct Interface
 interface IBundleProduct extends Document {
-  bundleId: string;
   sellerId: string;
   name: string;
   description?: string;
@@ -15,7 +14,6 @@ interface IBundleProduct extends Document {
 
 // Bundle Product Schema
 const BundleProductSchema = new Schema<IBundleProduct>({
-  bundleId: { type: String, required: true, unique: true },
   sellerId: { type: String, required: true },
   name: { type: String, required: true },
   description: { type: String },

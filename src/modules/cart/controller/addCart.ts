@@ -2,12 +2,11 @@ import { Request, Response } from 'express';
 import { Cart, ICart } from '../../../model/cart';
 import { OrderItem, IOrderItem } from '../../../model/orderItem';
 import { Product, IProduct } from '../../../model/product';
-import mongoose from 'mongoose';
 
 const addToCart = async (req: Request, res: Response) => {
   try {
-    const { userId, productId, quantity = 1 } = req.body;
-
+    const { productId, quantity = 1 } = req.body;
+    const userId = req.userId
     // Check if the product exists
     const product = (await Product.findById(productId)) as IProduct;
     if (!product) {
@@ -17,7 +16,6 @@ const addToCart = async (req: Request, res: Response) => {
     const price = product.price * quantity;
 
     const orderItem = new OrderItem({
-      orderItemId: new mongoose.Types.ObjectId().toString(),
       productId: product.id,
       quantity,
       price,
@@ -31,9 +29,8 @@ const addToCart = async (req: Request, res: Response) => {
     if (!cart) {
       // If no cart exists, create a new one
       cart = new Cart({
-        cartId: new mongoose.Types.ObjectId().toString(),
         userId,
-        items: [orderItem._id],
+        items: orderItem.id,
         totalAmount: orderItem.price,
       });
     } else {
