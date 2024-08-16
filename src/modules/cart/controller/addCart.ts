@@ -6,7 +6,7 @@ import { Product, IProduct } from '../../../model/product';
 const addToCart = async (req: Request, res: Response) => {
   try {
     const { productId, quantity = 1 } = req.body;
-    const userId = req.userId
+    const userId = req.userId;
     // Check if the product exists
     const product = (await Product.findById(productId)) as IProduct;
     if (!product) {

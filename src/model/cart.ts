@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IOrderItem } from './orderItem';
 
 export interface ICart extends Document {
-  userId:  mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   items: IOrderItem[];
   totalAmount: number;
   createdAt: Date;
@@ -18,4 +18,4 @@ const CartSchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export const Cart = mongoose.model<ICart>('Cart', CartSchema,'Cart');
+export const Cart = mongoose.model<ICart>('Cart', CartSchema, 'Cart');
