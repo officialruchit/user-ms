@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IWishlistItem {
-  productId: mongoose.Types.ObjectId;
+  itemId: mongoose.Types.ObjectId; // Can be either a productId or a bundleId
+  itemType: 'Product' | 'Bundle'; // Indicates whether the item is a product or a bundle
   addedAt: Date;
 }
 
@@ -11,7 +12,8 @@ export interface IWishlist extends Document {
 }
 
 const WishlistItemSchema = new Schema<IWishlistItem>({
-  productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  itemId: { type: Schema.Types.ObjectId, required: true }, // References either Product or Bundle
+  itemType: { type: String, enum: ['Product', 'Bundle'], required: true },
   addedAt: { type: Date, default: Date.now },
 });
 
