@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { Cart, ICart } from '../../../model/cart';
 import { OrderItem } from '../../../model/orderItem';
-import mongoose from 'mongoose';
-
 export const removeCartItem = async (req: Request, res: Response) => {
   try {
     const { itemId } = req.body; // itemId is the _id of the specific item in the cart
@@ -33,7 +31,6 @@ export const removeCartItem = async (req: Request, res: Response) => {
       await cart.save(); // Save the updated cart
       return res.status(200).json({ message: 'Item removed from cart', cart });
     } else {
-      console.log('Item not found');
       return res.status(404).json({ message: 'Item not found in cart' });
     }
 
