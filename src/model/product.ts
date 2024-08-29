@@ -1,8 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import {IDiscount}from './discount'
-
-interface IProduct extends Document {
-  sellerId: string;
+import { IDiscount } from './discount';
+export interface IProduct extends Document {
+  adminId: string;
   name: string;
   description: string;
   price: number;
@@ -15,8 +14,9 @@ interface IProduct extends Document {
   updatedAt: Date;
 }
 
-const ProductSchema: Schema<IProduct> = new Schema({
-  sellerId: { type: String, required: true },
+// Product Schema
+const ProductSchema = new Schema<IProduct>({
+  adminId: { type: String, required: true },
   name: { type: String, required: true },
   description: { type: String },
   price: { type: Number, required: true },
@@ -29,6 +29,8 @@ const ProductSchema: Schema<IProduct> = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Product = mongoose.model<IProduct>('Product', ProductSchema, 'Product');
-
-export { IProduct, Product };
+export const Product = mongoose.model<Document>(
+  'Product',
+  ProductSchema,
+  'Product',
+);

@@ -23,7 +23,7 @@ interface IProfile {
   address: IAddress;
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   username: string;
   email: string;
   phoneNumber?: string;

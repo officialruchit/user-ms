@@ -9,7 +9,7 @@ interface IProductCategory extends Document {
 }
 
 const ProductCategorySchema: Schema<IProductCategory> = new Schema({
-  categoryName: { type: String, required: true, unique: true },
+  categoryName: { type: String, required: true },
   description: { type: String },
   isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
@@ -19,5 +19,5 @@ const ProductCategorySchema: Schema<IProductCategory> = new Schema({
 export default mongoose.model<IProductCategory>(
   'ProductCategory',
   ProductCategorySchema,
-  'ProductCategory'
+  'ProductCategory',
 );
