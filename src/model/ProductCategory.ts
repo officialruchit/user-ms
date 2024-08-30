@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IProductCategory extends Document {
+export interface IProductCategory extends Document {
   categoryName: string;
   description: string;
   isActive: boolean;
@@ -8,7 +8,7 @@ interface IProductCategory extends Document {
   updatedAt: Date;
 }
 
-const ProductCategorySchema: Schema<IProductCategory> = new Schema({
+export const ProductCategorySchema: Schema<IProductCategory> = new Schema({
   categoryName: { type: String, required: true },
   description: { type: String },
   isActive: { type: Boolean, default: true },

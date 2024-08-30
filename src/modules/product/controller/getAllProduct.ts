@@ -22,7 +22,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
       .status(200)
       .json({ totalDocs, totalPages, PageNumber, limitNumber, products });
   } catch (error) {
-    const err=error as Error
+    const err = error as Error;
     res.status(500).json({ message: err.message });
   }
 };

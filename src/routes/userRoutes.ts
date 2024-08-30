@@ -5,12 +5,15 @@ import bundle from '../modules/bundle/routes/BundleRoutes';
 import product from '../modules/product/routes/ProductRoutes';
 import cart from '../modules/cart/routes/CartRoutes';
 import wishlist from '../modules/wishlist/routes/wishlistRoutes';
-import routes from '../modules/sales/routes/routes';
-
+import sales from '../modules/sales/routes/routes';
+import Order from '../modules/order/routes/orderRoutes';
+import payment from '../modules/payment/routes/paymentRoutes';
 router.use('/', profile);
 router.use('/', bundle);
 router.use('/', product);
 router.use('/', cart);
 router.use('/', wishlist);
-router.use('/', routes);
+router.use('/', sales);
+router.use('/', Order);
+router.use('/', payment);
 export default router;

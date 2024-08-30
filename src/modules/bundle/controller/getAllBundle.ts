@@ -17,7 +17,10 @@ export const getAllBundle = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalDocuments / limitNumber);
 
     const bundleProducts = await BundleProduct.find(searchFilter)
-      .populate('products')
+      .populate({
+        path: 'products',
+        select: 'name description price quantity',
+      })
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber)
       .exec();

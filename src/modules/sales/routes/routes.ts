@@ -3,6 +3,6 @@ import { getActiveSales } from '../controller/getActiveSales';
 import auth from '../../../middleware/auth';
 const routes = Router();
 
-routes.get('/getActiveSales',auth, getActiveSales);
+routes.get('/getActiveSales', auth, getActiveSales);
 
 export default routes;

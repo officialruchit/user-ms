@@ -7,7 +7,6 @@ export const addProductToWishlist = async (req: Request, res: Response) => {
   try {
     const userId = req.userId; // Assuming userId is available in the request
     const { productId } = req.body;
-    console.log(userId);
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({ message: 'Invalid product ID' });
@@ -15,7 +14,6 @@ export const addProductToWishlist = async (req: Request, res: Response) => {
 
     let wishlist = await Wishlist.findOne({ userId });
 
-    console.log(wishlist);
     if (!wishlist) {
       wishlist = new Wishlist({ userId, items: [] });
     }

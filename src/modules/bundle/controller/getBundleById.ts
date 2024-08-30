@@ -3,8 +3,10 @@ import { BundleProduct } from '../../../model/bundle';
 export const getBundleById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const bundleProducts =
-      await BundleProduct.findById(id).populate('products');
+    const bundleProducts = await BundleProduct.findById(id).populate({
+      path: 'products',
+      select: 'name description price quantity',
+    });
     if (!bundleProducts) {
       res.status(401).json({ message: 'not found' });
     }
