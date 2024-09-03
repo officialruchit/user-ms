@@ -1,14 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export interface IProductCategory extends Document {
+interface IProductCategory extends Document {
   categoryName: string;
   description: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
-
-export const ProductCategorySchema: Schema<IProductCategory> = new Schema({
+const ProductCategorySchema: Schema<IProductCategory> = new Schema({
   categoryName: { type: String, required: true },
   description: { type: String },
   isActive: { type: Boolean, default: true },
@@ -16,8 +15,10 @@ export const ProductCategorySchema: Schema<IProductCategory> = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<IProductCategory>(
+const ProductCategory = mongoose.model<IProductCategory>(
   'ProductCategory',
   ProductCategorySchema,
   'ProductCategory',
 );
+
+export { IProductCategory, ProductCategory };

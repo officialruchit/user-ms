@@ -1,38 +1,33 @@
 import { Request, Response } from 'express';
 import { Cart } from '../../../model/cart';
-
-export const removeItemFromCart = async (req: Request, res: Response) => {
+import { OrderItem } from '../../../model/orderItem';
+export const removeFromCart = async (req: Request, res: Response) => {
   try {
-    const { itemType, itemId } = req.body;
+    const { itemId, itemType } = req.query;
     const userId = req.userId;
 
-    // Find the user's cart
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ userId }).populate('items');
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // Remove the item from the cart
-    cart.items = cart.items.filter((i) => {
-      // Ensure that itemId and itemType are defined before comparing
-      if (!i.itemId || !i.itemType) {
-        return true; // Keep the item if either is undefined
-      }
-      return i.itemId.toString() !== itemId || i.itemType !== itemType;
-    });
+    const itemIndex = cart.items.findIndex(
+      (i: any) => i.itemId.toString() === itemId && i.itemType === itemType,
+    );
 
-    // Update the total amount, ensuring that the price is a valid number
-    cart.totalAmount = cart.items.reduce((sum, item) => {
-      const price = item.price || 0; // Fallback to 0 if price is undefined or null
-      return sum + price;
-    }, 0);
-
-    // Save the updated cart
-    await cart.save();
+    if (itemIndex > -1) {
+      const [removedItem] = cart.items.splice(itemIndex, 1);
+      await OrderItem.findByIdAndDelete(removedItem._id); // Remove the order item from the database
+      cart.totalAmount = cart.items.reduce(
+        (sum: number, item: any) => sum + item.price,
+        0,
+      );
+      await cart.save();
+    }
 
     res.status(200).json({ message: 'Item removed from cart', cart });
-  } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({ message: error.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: (error as Error).message });
   }
 };

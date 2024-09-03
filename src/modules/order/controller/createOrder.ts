@@ -1,54 +1,38 @@
 import { Request, Response } from 'express';
 import { Cart } from '../../../model/cart';
 import { Order } from '../../../model/order';
-import { OrderItem } from '../../../model/orderItem';
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
+    const { address, paymentMethod } = req.body;
 
-    // Find the user's cart
-    const cart = await Cart.findOne({ userId }).populate('items.itemId');
+    const cart = await Cart.findOne({ userId }).populate('items');
+
     if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty or not found' });
+      return res.status(400).json({ message: 'Cart is empty' });
     }
 
-    // Create order items from the cart items
-    const orderItems = await Promise.all(
-      cart.items.map(async (item) => {
-        const orderItem = new OrderItem({
-          itemType: item.itemType,
-          itemId: item.itemId,
-          quantity: item.quantity,
-          price: item.price,
-        });
-        await orderItem.save();
-        return orderItem.id;
-      }),
-    );
-
-    // Create the order
-    const order = new Order({
+    const newOrder = new Order({
       userId,
-      orderItems,
+      orderItems: cart.items,
       totalAmount: cart.totalAmount,
-      paymentMethod: req.body.paymentMethod, // Ensure this is provided in the request
-      address: req.body.address, // Ensure this is provided in the request
+      paymentMethod,
       paymentStatus: 'pending',
       status: 'pending',
+      address, // Using the address directly from the request body
     });
 
-    // Save the order
-    await order.save();
+    await newOrder.save();
 
-    // Clear the cart after creating the order
+    // Clear the cart
     cart.items = [];
     cart.totalAmount = 0;
     await cart.save();
 
-    res.status(201).json({ message: 'Order created successfully', order });
-  } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({ message: error.message });
+    res.status(201).json({ message: 'Order created', order: newOrder });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: (error as Error).message });
   }
 };

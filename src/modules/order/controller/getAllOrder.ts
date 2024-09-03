@@ -6,7 +6,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
     const userId = req.userId;
 
     // Find all orders for the user
-    const orders = await Order.find({ userId }).populate('orderItems.itemId');
+    const orders = await Order.find({ userId }).populate('orderItems');
 
     res.status(200).json({ orders });
   } catch (err) {

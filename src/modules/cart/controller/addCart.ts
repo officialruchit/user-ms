@@ -6,44 +6,50 @@ import { BundleProduct, IBundleProduct } from '../../../model/bundle';
 
 export const addToCart = async (req: Request, res: Response) => {
   try {
-    const { itemType, itemId, quantity } = req.body;
+    const { itemId, itemType } = req.query;
+    const { quantity } = req.body;
     const userId = req.userId;
 
-    // Find or create the user's cart
-    let cart = await Cart.findOne({ userId });
-    if (!cart) {
-      cart = new Cart({ userId });
+    if (!itemId || !itemType) {
+      return res
+        .status(400)
+        .json({ message: 'itemId and itemType are required' });
     }
 
-    // Check if the item exists
-    let item: IProduct | IBundleProduct | null = null;
+    if (quantity < 1 || isNaN(quantity)) {
+      return res.status(400).json({ message: 'Quantity must be at least 1' });
+    }
+
     let itemPrice = 0;
+    let item: IProduct | IBundleProduct | null = null;
 
     if (itemType === 'Product') {
       item = (await Product.findById(itemId)) as IProduct;
       itemPrice =
-        item?.discountedPrice || item?.sellingPrice || item?.price || 0; // Fallback to 0 if no price is found
+        item?.discountedPrice || item?.sellingPrice || item?.price || 0;
     } else if (itemType === 'Bundle') {
       item = (await BundleProduct.findById(itemId)) as IBundleProduct;
-      itemPrice = item?.discountPrice || item?.totalPrice || 0; // Fallback to 0 if no price is found
+      itemPrice = item?.discountPrice || item?.totalPrice || 0;
     }
 
     if (!item) {
       return res.status(404).json({ message: `${itemType} not found` });
     }
 
-    // Check if the item is already in the cart
+    let cart = await Cart.findOne({ userId }).populate('items');
+    if (!cart) {
+      cart = new Cart({ userId, items: [], totalAmount: 0 });
+    }
+
     const existingItemIndex = cart.items.findIndex(
-      (i) => i.itemId.toString() === itemId && i.itemType === itemType,
+      (i: any) => i.itemId.toString() === itemId && i.itemType === itemType,
     );
 
     if (existingItemIndex > -1) {
-      // Update the quantity and price if it exists
       cart.items[existingItemIndex].quantity += quantity;
       cart.items[existingItemIndex].price =
         itemPrice * cart.items[existingItemIndex].quantity;
     } else {
-      // Add new item to the cart
       const newItem = new OrderItem({
         itemType,
         itemId,
@@ -51,18 +57,20 @@ export const addToCart = async (req: Request, res: Response) => {
         price: itemPrice * quantity,
       });
 
+      await newItem.save(); // Save the new order item
+
       cart.items.push(newItem);
     }
 
-    // Update the total amount
-    cart.totalAmount = cart.items.reduce((sum, item) => sum + item.price, 0);
-
-    // Save the cart and its items
+    cart.totalAmount = cart.items.reduce(
+      (sum: number, item: any) => sum + item.price,
+      0,
+    );
     await cart.save();
 
     res.status(200).json({ message: `${itemType} added to cart`, cart });
-  } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({ message: error.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: (error as Error).message });
   }
 };
